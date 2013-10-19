@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.android.internal.telephony.ITelephony;
 
+import android.R.bool;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -13,6 +14,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -32,15 +35,29 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 			String number = intent
 					.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 			Log.v(TAG, "number:" + number);
-			//if (!getPhoneNum(context).contains(number)) {
+			// if (!getPhoneNum(context).contains(number)) {
 			if (number.equals("15850053721")) {
-			//if (true) {
+				// if (true) {
 				SharedPreferences phonenumSP = context.getSharedPreferences(
 						"in_phone_num", Context.MODE_PRIVATE);
 				Editor editor = phonenumSP.edit();
 				editor.putString(number, number);
 				editor.commit();
+
+				AudioManager am = (AudioManager) context
+						.getSystemService(Context.AUDIO_SERVICE);
+				int mode = am.getRingerMode();
+				am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+				try {
+					Thread.sleep(200);
+				} catch (Exception ex) {
+
+				}
+
 				endCall();
+
+				am.setRingerMode(mode);
 			}
 			break;
 		case TelephonyManager.CALL_STATE_OFFHOOK:
