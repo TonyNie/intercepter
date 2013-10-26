@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.android.internal.telephony.ITelephony;
 
-import android.R.bool;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -15,7 +14,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.media.AudioManager;
-import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;

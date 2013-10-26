@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
-
+	public static final String CONFIG_PATH = "intercepter.xml";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
