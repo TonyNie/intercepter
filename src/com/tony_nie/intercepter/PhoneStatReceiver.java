@@ -22,41 +22,22 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 
 	String TAG = "State";
 	TelephonyManager telMgr;
+	private IntercepterConfig config;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+
+		try {
+			config = new IntercepterConfig(MainActivity.CONFIG_PATH);
+		} catch (Exception e) {
+
+		}
 		// TODO Auto-generated method stub
 		telMgr = (TelephonyManager) context
 				.getSystemService(Service.TELEPHONY_SERVICE);
 		switch (telMgr.getCallState()) {
 		case TelephonyManager.CALL_STATE_RINGING:
-			String number = intent
-					.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-			Log.v(TAG, "number:" + number);
-			// if (!getPhoneNum(context).contains(number)) {
-			if (number.equals("15850053721")) {
-				// if (true) {
-				SharedPreferences phonenumSP = context.getSharedPreferences(
-						"in_phone_num", Context.MODE_PRIVATE);
-				Editor editor = phonenumSP.edit();
-				editor.putString(number, number);
-				editor.commit();
-
-				AudioManager am = (AudioManager) context
-						.getSystemService(Context.AUDIO_SERVICE);
-				int mode = am.getRingerMode();
-				am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-
-				try {
-					Thread.sleep(200);
-				} catch (Exception ex) {
-
-				}
-
-				endCall();
-
-				am.setRingerMode(mode);
-			}
+			porcessRinging(context, intent);
 			break;
 		case TelephonyManager.CALL_STATE_OFFHOOK:
 			break;
@@ -81,7 +62,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private ArrayList<String> getPhoneNum(Context context) {
+	private ArrayList<String> getCantacts(Context context) {
 		ArrayList<String> numList = new ArrayList<String>();
 		// 得到ContentResolver对象
 		ContentResolver cr = context.getContentResolver();
@@ -109,5 +90,57 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 		}
 		cursor.close();
 		return numList;
+	}
+
+	private boolean isInContacts(Context context, String phone) {
+		return getCantacts(context).contains(phone);
+	}
+
+	private void porcessRinging(Context context, Intent intent) {
+		boolean stop = false;
+		String phone = intent
+				.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+		Log.v(TAG, "number:" + phone);
+
+		if (config.isWhitelistEnable()
+				&& (config.isInWhitelist(phone) || isInContacts(context,
+						phone))) {
+			Log.v(TAG, "" + phone + " in whitelist or address book");
+			stop = false;
+			return;
+
+		} else {
+			stop = true;
+		}
+		
+		if (config.isBlacklistEnable() && config.isInBlacklist(phone)) {
+			stop = true;
+		} else {
+			stop = false;
+		}
+		
+		if (stop) {
+			SharedPreferences phonenumSP = context.getSharedPreferences(
+					"in_phone_num", Context.MODE_PRIVATE);
+			Editor editor = phonenumSP.edit();
+			editor.putString(phone, phone);
+			editor.commit();
+
+			AudioManager am = (AudioManager) context
+					.getSystemService(Context.AUDIO_SERVICE);
+			int mode = am.getRingerMode();
+			am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+			try {
+				Thread.sleep(200);
+			} catch (Exception ex) {
+
+			}
+
+			endCall();
+
+			am.setRingerMode(mode);
+		}
+
 	}
 }
