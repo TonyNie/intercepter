@@ -1,7 +1,6 @@
 package com.tony_nie.intercepter;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
 import com.android.internal.telephony.ITelephony;
 
@@ -15,6 +14,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -22,13 +22,13 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 
 	String TAG = "State";
 	TelephonyManager telMgr;
-	private IntercepterConfig config;
+	private SPConfig config;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
 		try {
-			config = new IntercepterConfig(MainActivity.CONFIG_PATH);
+			config = new SPConfig(context, MainActivity.CONFIG_NAME);
 		} catch (Exception e) {
 
 		}
@@ -62,63 +62,74 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private ArrayList<String> getCantacts(Context context) {
-		ArrayList<String> numList = new ArrayList<String>();
-		// 得到ContentResolver对象
+
+	static public  boolean inContacts(Context context, String number) {
+		String[] projection = new String[] { Phone.NUMBER };
 		ContentResolver cr = context.getContentResolver();
-		// 取得电话本中开始一项的光标
-		Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null,
+		Cursor phone = cr.query(
+				ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection,
 				null, null, null);
-		while (cursor.moveToNext()) {
-			// 取得联系人ID
-			String contactId = cursor.getString(cursor
-					.getColumnIndex(ContactsContract.Contacts._ID));
-			Cursor phone = cr.query(
-					ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-					ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "
-							+ contactId, null, null);
-			// 取得电话号码(可能存在多个号码)
-			while (phone.moveToNext()) {
-				String strPhoneNumber = phone
-						.getString(phone
-								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-				numList.add(strPhoneNumber);
-				Log.v("tag", "strPhoneNumber:" + strPhoneNumber);
+
+		while (phone.moveToNext()) {
+			String __number = phone
+					.getString(phone
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+			if (__number.contains(number) || number.contains(__number)) {
+				Log.d("Query Cantacts", number + " Match " + __number);
+				return true;
 			}
-
-			phone.close();
 		}
-		cursor.close();
-		return numList;
-	}
+		
+		Log.d("Query Cantacts", number + " does not exist in Contacts ");
+		phone.close();
 
-	private boolean isInContacts(Context context, String phone) {
-		return getCantacts(context).contains(phone);
+		return false;
 	}
-
+	
 	private void porcessRinging(Context context, Intent intent) {
 		boolean stop = false;
 		String phone = intent
 				.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 		Log.v(TAG, "number:" + phone);
 
-		if (config.isWhitelistEnable()
-				&& (config.isInWhitelist(phone) || isInContacts(context,
-						phone))) {
-			Log.v(TAG, "" + phone + " in whitelist or address book");
-			stop = false;
+		long begin = System.currentTimeMillis();
+		if (inContacts(context, phone)) {
+			Log.i(TAG, "" + phone + " in address book");
 			return;
+		}
+		long end = System.currentTimeMillis();
+		Log.v(TAG, "query Contact: " + (end - begin));
+		
+		if (config.isBlacklistEnable()) {
+			if (config.isInBlacklist(phone)) {
+				long state = config.getEntryState(SPConfig.BLACKLIST, ""
+						+ phone);
+				if ((state & SPConfig.ENTRY_ENABLE_PHONE) == 1)
+					stop = true;
+				else
+					stop = false;
+			} else {
+				stop = false;
+			}
+		}
+		
+		if (config.isWhitelistEnable()) {
+			if (config.isInWhitelist(phone)) {
+				long state = config.getEntryState(SPConfig.WHITELIST, ""
+						+ phone);
+				Log.v(TAG, "" + phone + " in whitelist");
 
-		} else {
-			stop = true;
+				if ((state & SPConfig.ENTRY_ENABLE_PHONE) == 1) {
+					stop = false;
+					return;
+				} else {
+					stop = true;
+				}
+			} else {
+				stop = true;
+			}
 		}
-		
-		if (config.isBlacklistEnable() && config.isInBlacklist(phone)) {
-			stop = true;
-		} else {
-			stop = false;
-		}
-		
+
 		if (stop) {
 			SharedPreferences phonenumSP = context.getSharedPreferences(
 					"in_phone_num", Context.MODE_PRIVATE);
