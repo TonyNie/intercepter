@@ -4,5 +4,17 @@
     <string name="app_name">Intercepter</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello Intercepter!</string>
+    <string name="add_new">New</string>
+    <string name="add_new_blacklist">Add new</string>
+    <string name="add_new_whitelist">Add new</string>
+    <string name="phone">Phone</string>
+    <string name="SMS">SMS</string>
+
+    <string-array name="str_list_source">
+        <item>Address Book</item>
+        <item>Call records</item>
+        <item>SMS records</item>
+        <item>Manual</item>
+    </string-array>
 
 </resources>

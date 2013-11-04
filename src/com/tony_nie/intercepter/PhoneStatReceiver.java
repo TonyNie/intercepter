@@ -28,7 +28,7 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 
 		try {
-			config = new SPConfig(context, MainActivity.CONFIG_NAME);
+			config = new SPConfig(context, SPConfig.CONFIG_NAME);
 		} catch (Exception e) {
 
 		}

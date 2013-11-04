@@ -1,15 +1,15 @@
 package com.tony_nie.intercepter;
 
 import android.os.Bundle;
+
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.Window;
 import android.widget.TabHost;
 
 public class MainActivity extends FragmentActivity {
 	public static final String CONFIG_PATH = "intercepter.xml";
-	public static final String CONFIG_NAME = "intercepter_config";
+	
 	public static final String INTERCCPTER = "intercepter";
 	private SPConfig spConfig;
 	private TabHost tabHost;
@@ -35,8 +35,12 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	private void testSPconfig() {
-		long phone = 15850053721L;
+		long phone = 15850053722L;
 
+		spConfig.addNumber2Blacklist("" + phone++);
+		spConfig.addNumber2Blacklist("" + phone++);
+		spConfig.addNumber2Blacklist("" + phone++);
+		spConfig.addNumber2Blacklist("" + phone++);
 		spConfig.addNumber2Blacklist("" + phone++);
 		spConfig.addNumber2Blacklist("" + phone++);
 
@@ -52,12 +56,12 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		setContentView(R.layout.activity_main);
 		Log.d("Activety", "Created.");
-		spConfig = new SPConfig(this, CONFIG_NAME);
+		spConfig = new SPConfig(this, SPConfig.CONFIG_NAME);
 
 		/*
 		 * long begin = System.currentTimeMillis();
@@ -67,7 +71,7 @@ public class MainActivity extends FragmentActivity {
 		 * + (end - begin));
 		 */
 
-		// testSPconfig();
+		testSPconfig();
 
 		setFragment();
 		changeLayout();
@@ -89,10 +93,12 @@ public class MainActivity extends FragmentActivity {
 		tabHost = (TabHost) findViewById(R.id.tabhost);
 		tabHost.setup();
 
-		tabHost.addTab(tabHost.newTabSpec("blacklist").setIndicator("blacklist").setContent(R.id.frag_blacklist));
-		tabHost.addTab(tabHost.newTabSpec("whitelist").setIndicator("whitelist").setContent(R.id.frag_whitelist));
-		tabHost.addTab(tabHost.newTabSpec("setting").setIndicator("setting").setContent(R.id.frag_setting));
-		
+		tabHost.addTab(tabHost.newTabSpec("blacklist")
+				.setIndicator("blacklist").setContent(R.id.frag_blacklist));
+		tabHost.addTab(tabHost.newTabSpec("whitelist")
+				.setIndicator("whitelist").setContent(R.id.frag_whitelist));
+		tabHost.addTab(tabHost.newTabSpec("setting").setIndicator("setting")
+				.setContent(R.id.frag_setting));
 
 		tabHost.setCurrentTab(0);
 	}

@@ -18,7 +18,8 @@ public class SPConfig {
 	static final long ENTRY_ENABLE_SMS = 1 << 1;
 	static final long ENTRY_ENABLE_ALL = (ENTRY_ENABLE_PHONE | ENTRY_ENABLE_SMS);
 	static final long ENTRY_DISABLE_ALL = 0;
-
+	public static final String CONFIG_NAME = "intercepter_config";
+	
 	private SharedPreferences spPreferences;
 
 	public SPConfig(Context context, String config) {
@@ -95,7 +96,7 @@ public class SPConfig {
 		}
 
 		if (length <= 0)
-			return null;
+			return new String[0];
 
 		String list[] = new String[length];
 		int i = 0;
