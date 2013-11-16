@@ -30,6 +30,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.tony_nie.intercepter.NumberInfoActivity"
+            android:label="@string/info">
+            
+        </activity>
         <receiver android:name=".PhoneStatReceiver" >
             <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.PHONE_STATE" />

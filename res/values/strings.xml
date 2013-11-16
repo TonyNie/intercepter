@@ -10,6 +10,9 @@
     <string name="phone">Phone</string>
     <string name="SMS">SMS</string>
     <string name="makesure">OK</string>
+    <string name="delete">-</string>
+    <string name="delete_number">delete</string>
+    <string name="info">INFO</string>
 
     <string-array name="str_list_source">
         <item>Address Book</item>

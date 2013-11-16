@@ -16,7 +16,7 @@ public class AddNewListListener implements android.view.View.OnClickListener {
 	private String mBaseName;
 	private Fragment mFragment;
 	private final String ADDNEW = "add new list";
-	static final int PICK_CONTACT_REQUEST = 0;
+	
 
 	
 	public AddNewListListener(android.support.v4.app.Fragment fragment,
@@ -32,7 +32,7 @@ public class AddNewListListener implements android.view.View.OnClickListener {
 		pickContactIntent
 				.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
 		mFragment.startActivityForResult(pickContactIntent,
-				PICK_CONTACT_REQUEST);
+				BLFragment.PICK_CONTACT_REQUEST);
 		return 0;
 	}
 
