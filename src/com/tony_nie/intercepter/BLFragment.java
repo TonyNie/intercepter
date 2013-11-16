@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.animation.AnimatorSet.Builder;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +18,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-public class BLFragment extends Fragment {
-	private final String NUMLIST = "CHOOSE";
+public class BLFragment extends android.support.v4.app.Fragment {
+	private final String FRAGMENT = "fragment";
 	private ListView listView;
-	private String[] numberList;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -31,22 +29,26 @@ public class BLFragment extends Fragment {
 
 	}
 
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		final Activity activity = getActivity();
-		listView = (ListView) getActivity().findViewById(
-				R.id.listview_blacklist);
+	private void updateListviewData() {
 		String[] strings = { "number", "phone", "SMS" };
 		int[] ids = { R.id.text_phone_number, R.id.checkbox_phone,
 				R.id.checkbox_SMS };
-
 		SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(),
 				getData(), R.layout.layout_entry, strings, ids);
 		listView.setAdapter(simpleAdapter);
+	}
 
-		View.OnClickListener listnener = new AddNewListListener(activity, "blacklist");
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
+		listView = (ListView) getActivity().findViewById(
+				R.id.listview_blacklist);
+
+		updateListviewData();
+
+		android.support.v4.app.Fragment fragment = this;
+		View.OnClickListener listnener = new AddNewListListener(fragment,
+				"blacklist");
 		Button button = (Button) getActivity().findViewById(
 				R.id.btn_new_blacklist);
 		button.setOnClickListener(listnener);
@@ -75,5 +77,37 @@ public class BLFragment extends Fragment {
 		}
 
 		return list;
+	}
+
+	private int getContactFromIntent(Intent data) {
+		Uri contactUri = data.getData();
+		String[] projection = { Phone.NUMBER };
+		Cursor cursor = getActivity().getContentResolver().query(contactUri,
+				projection, null, null, null);
+		cursor.moveToFirst();
+		int column = cursor.getColumnIndex(Phone.NUMBER);
+		String number = cursor.getString(column);
+		Log.i(FRAGMENT, "choose number for contacts:" + number);
+
+		SPConfig config = new SPConfig(getActivity(), SPConfig.CONFIG_NAME);
+		config.addNumber2Blacklist(number);
+
+		updateListviewData();
+
+		return 0;
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case AddNewListListener.PICK_CONTACT_REQUEST:
+			Log.i(FRAGMENT, "received result");
+			if (Activity.RESULT_OK == resultCode)
+				getContactFromIntent(data);
+			break;
+		default:
+			break;
+		}
 	}
 }

@@ -9,6 +9,7 @@
     <string name="add_new_whitelist">Add new</string>
     <string name="phone">Phone</string>
     <string name="SMS">SMS</string>
+    <string name="makesure">OK</string>
 
     <string-array name="str_list_source">
         <item>Address Book</item>
