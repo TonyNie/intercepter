@@ -24,9 +24,15 @@ public class BLFragment extends android.support.v4.app.Fragment {
 	static final int PICK_CONTACT_REQUEST = 0;
 	static final int EDIT_NUMBER = 1;
 	static final String NUMBER = "number";
-	static final String PHONE = "PHONE";
+	static final String PHONE = "phone";
 	static final String SMS = "SMS";
 	static final String DOMAIN = "DOMAIN";
+	static final String ACTION = "ACTION";
+	static final String ACTION_NONE = "do_nothing";
+	static final String ACTION_DELETE = "delete";
+	static final String ACTION_UPDATE_NUMBER = "update_number";
+	static final String ACTION_UPDATE_STATE = "update_state";
+	static final String ORIGINAL_NUMBER = "orginal_number";
 	private final String FRAGMENT = "fragment";
 	private ListView listView;
 
@@ -38,7 +44,7 @@ public class BLFragment extends android.support.v4.app.Fragment {
 	}
 
 	private void updateListviewData() {
-		String[] strings = { "number", "phone", "SMS" };
+		String[] strings = { NUMBER, PHONE, SMS };
 		int[] ids = { R.id.text_phone_number, R.id.checkbox_phone,
 				R.id.checkbox_SMS };
 		SimpleAdapter simpleAdapter = new SimpleAdapter(getActivity(),
@@ -57,7 +63,7 @@ public class BLFragment extends android.support.v4.app.Fragment {
 
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+
 				HashMap<String, Object> data = (HashMap<String, Object>) listView
 						.getItemAtPosition(position);
 				String number = data.get(NUMBER).toString();
@@ -69,7 +75,8 @@ public class BLFragment extends android.support.v4.app.Fragment {
 				bundle.putString(NUMBER, number);
 				bundle.putBoolean(PHONE, phone);
 				bundle.putBoolean(SMS, sms);
-				Intent intent = new Intent(BLFragment.this.getActivity(), NumberInfoActivity.class);
+				Intent intent = new Intent(BLFragment.this.getActivity(),
+						NumberInfoActivity.class);
 				intent.putExtras(bundle);
 				BLFragment.this.startActivityForResult(intent, EDIT_NUMBER);
 			}
@@ -104,6 +111,7 @@ public class BLFragment extends android.support.v4.app.Fragment {
 			map.put(PHONE, phone);
 			map.put(SMS, sms);
 
+			Log.i(FRAGMENT, numbers[i] + " " + phone);
 			list.add(map);
 		}
 
@@ -130,6 +138,41 @@ public class BLFragment extends android.support.v4.app.Fragment {
 		return 0;
 	}
 
+	private int updateNumber(Intent data) {
+		Bundle bundle = data.getExtras();
+
+		if (null == bundle)
+			return 0;
+
+		SPConfig config = new SPConfig(getActivity(), SPConfig.CONFIG_NAME);
+
+		String action = bundle.getString(ACTION);
+		String number = bundle.getString(NUMBER);
+		boolean phone = bundle.getBoolean(PHONE);
+		boolean sms = bundle.getBoolean(SMS);
+		long state = 0;
+
+		if (phone)
+			state |= SPConfig.ENTRY_ENABLE_PHONE;
+		if (sms)
+			state |= SPConfig.ENTRY_ENABLE_SMS;
+
+		Log.i(FRAGMENT, "" + number + " state: " + state);
+		if (action.equals(ACTION_DELETE)) {
+			config.removeNumberFromBlacklist(number);
+		} else if (action.equals(ACTION_UPDATE_NUMBER)) {
+			String orignal = bundle.getString(ORIGINAL_NUMBER);
+			config.removeNumberFromBlacklist(orignal);
+			config.addNumber2Blacklist(number);
+			config.setEntrySate(SPConfig.BLACKLIST, number, state);
+		} else if (action.equals(ACTION_UPDATE_STATE)) {
+			config.setEntrySate(SPConfig.BLACKLIST, number, state);
+		}
+
+		updateListviewData();
+		return 0;
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		super.onActivityResult(requestCode, resultCode, data);
@@ -140,7 +183,8 @@ public class BLFragment extends android.support.v4.app.Fragment {
 				getContactFromIntent(data);
 			break;
 		case EDIT_NUMBER:
-			updateListviewData();
+			if (null != data)
+				updateNumber(data);
 			break;
 		default:
 			break;
