@@ -70,8 +70,6 @@ public class SPConfig {
 
 		Map<String, ?> keys = spPreferences.getAll();
 		for (Map.Entry<String, ?> entry : keys.entrySet()) {
-			Log.d("map values", entry.getKey() + ": "
-					+ entry.getValue().toString());
 			String key = entry.getKey();
 			if (key.indexOf(type + INDICATOR) >= 0)
 				editor.remove(key);

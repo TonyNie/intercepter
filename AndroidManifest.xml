@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -29,16 +32,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.tony_nie.intercepter.NumberInfoActivity"
-            android:label="@string/info">
-            
+            android:label="@string/info" >
         </activity>
+        <activity
+            android:name="com.tony_nie.intercepter.CallLogActivity"
+            android:label="@string/calllog" >
+        </activity>
+
+        <activity
+            android:name="com.tony_nie.intercepter.SMSLogActivity"
+            android:label="@string/smslog" >
+        </activity>
+        
         <receiver android:name=".PhoneStatReceiver" >
             <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" /> 
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
     </application>

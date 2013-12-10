@@ -22,7 +22,9 @@ import android.widget.SimpleAdapter;
 
 public class BLFragment extends android.support.v4.app.Fragment {
 	static final int PICK_CONTACT_REQUEST = 0;
-	static final int EDIT_NUMBER = 1;
+	static final int PICK_CALLLOG_REQUEST = 1;
+	static final int PICK_SMSLOG_REQUEST = 2;
+	static final int EDIT_NUMBER = 3;
 	static final String NUMBER = "number";
 	static final String PHONE = "phone";
 	static final String SMS = "SMS";
@@ -118,7 +120,49 @@ public class BLFragment extends android.support.v4.app.Fragment {
 		return list;
 	}
 
-	private int getContactFromIntent(Intent data) {
+	private int getNumberFromCallLog(Intent data) {
+		Log.i(FRAGMENT, "get number form call log");
+		Bundle bundle = data.getExtras();
+
+		if (null == bundle)
+			return 0;
+
+		String number = bundle.getString(CallLogActivity.CALLLOG_NUMBER);
+
+		long state = 0;
+		state |= SPConfig.ENTRY_ENABLE_ALL;
+
+		SPConfig config = new SPConfig(getActivity(), SPConfig.CONFIG_NAME);
+		config.addNumber2Blacklist(number);
+		config.setEntrySate(SPConfig.BLACKLIST, number, state);
+
+		updateListviewData();
+
+		return 0;
+	}
+
+	private int getNumberFromSMSLog(Intent data) {
+		Log.i(FRAGMENT, "get number form call log");
+		Bundle bundle = data.getExtras();
+
+		if (null == bundle)
+			return 0;
+
+		String number = bundle.getString(SMSLogActivity.SMSLOG_NUMBER);
+
+		long state = 0;
+		state |= SPConfig.ENTRY_ENABLE_ALL;
+
+		SPConfig config = new SPConfig(getActivity(), SPConfig.CONFIG_NAME);
+		config.addNumber2Blacklist(number);
+		config.setEntrySate(SPConfig.BLACKLIST, number, state);
+
+		updateListviewData();
+
+		return 0;
+	}
+
+	private int getNumberFromContacts(Intent data) {
 		Uri contactUri = data.getData();
 		String[] projection = { Phone.NUMBER };
 		Cursor cursor = getActivity().getContentResolver().query(contactUri,
@@ -175,16 +219,25 @@ public class BLFragment extends android.support.v4.app.Fragment {
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+		Log.i(FRAGMENT, "requestcode " + requestCode);
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (requestCode) {
 		case PICK_CONTACT_REQUEST:
 			Log.i(FRAGMENT, "received result");
 			if (Activity.RESULT_OK == resultCode)
-				getContactFromIntent(data);
+				getNumberFromContacts(data);
 			break;
 		case EDIT_NUMBER:
 			if (null != data)
 				updateNumber(data);
+			break;
+		case PICK_CALLLOG_REQUEST:
+			if (null != data)
+				getNumberFromCallLog(data);
+			break;
+		case PICK_SMSLOG_REQUEST:
+			if (null != data)
+				getNumberFromSMSLog(data);
 			break;
 		default:
 			break;

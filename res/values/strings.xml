@@ -13,7 +13,9 @@
     <string name="delete">-</string>
     <string name="delete_number">delete</string>
     <string name="info">INFO</string>
-
+    <string name="calllog">Call Log</string>
+    <string name="username">User Name</string>
+	<string name="smslog">SMS Log</string>
     <string-array name="str_list_source">
         <item>Address Book</item>
         <item>Call records</item>

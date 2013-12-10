@@ -1,6 +1,5 @@
 package com.tony_nie.intercepter;
 
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
@@ -10,15 +9,12 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 
-
 public class AddNewListListener implements android.view.View.OnClickListener {
 
 	private String mBaseName;
 	private Fragment mFragment;
 	private final String ADDNEW = "add new list";
-	
 
-	
 	public AddNewListListener(android.support.v4.app.Fragment fragment,
 			String baseName) {
 		mFragment = fragment;
@@ -37,10 +33,20 @@ public class AddNewListListener implements android.view.View.OnClickListener {
 	}
 
 	private int addNewListFromCallRecords() {
+		Intent intent = new Intent(mFragment.getActivity(),
+				CallLogActivity.class);
+		mFragment.startActivityForResult(intent,
+				BLFragment.PICK_CALLLOG_REQUEST);
+
 		return 0;
 	}
 
+	
+
 	private int addNewListFromSMSRecords() {
+		Intent intent = new Intent(mFragment.getActivity(),
+				SMSLogActivity.class);
+		mFragment.startActivityForResult(intent, BLFragment.PICK_SMSLOG_REQUEST);
 		return 0;
 	}
 
@@ -74,10 +80,11 @@ public class AddNewListListener implements android.view.View.OnClickListener {
 	@Override
 	public void onClick(View v) {
 
-		String[] source = mFragment.getActivity().getResources().getStringArray(
-				R.array.str_list_source);
+		String[] source = mFragment.getActivity().getResources()
+				.getStringArray(R.array.str_list_source);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(mFragment.getActivity());
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				mFragment.getActivity());
 		builder.setTitle(mBaseName + " source");
 		builder.setSingleChoiceItems(source, 0,
 				new DialogInterface.OnClickListener() {

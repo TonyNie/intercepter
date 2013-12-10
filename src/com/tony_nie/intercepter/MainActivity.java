@@ -37,11 +37,9 @@ public class MainActivity extends FragmentActivity {
 	private void testSPconfig() {
 		long phone = 15850053722L;
 
-		spConfig.addNumber2Blacklist("" + phone++);
-		spConfig.addNumber2Blacklist("" + phone++);
-		spConfig.addNumber2Blacklist("" + phone++);
-		spConfig.addNumber2Blacklist("" + phone++);
-		spConfig.addNumber2Blacklist("" + phone++);
+		spConfig.clearBlacklist();
+		spConfig.clearWhitelist();
+		
 		spConfig.addNumber2Blacklist("" + phone++);
 
 		spConfig.addNumber2WhiteList("" + phone++);
@@ -50,7 +48,7 @@ public class MainActivity extends FragmentActivity {
 		spConfig.setBlacklist(true);
 		spConfig.setWhitelist(true);
 
-		printSPconfig();
+		//printSPconfig();
 	}
 
 	@Override

@@ -74,6 +74,8 @@ public class PhoneStatReceiver extends BroadcastReceiver {
 			String __number = phone
 					.getString(phone
 							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+			
+			/* TODO: how to process shorter number, i.e, 110 */
 			if (__number.contains(number) || number.contains(__number)) {
 				Log.d("Query Cantacts", number + " Match " + __number);
 				return true;
