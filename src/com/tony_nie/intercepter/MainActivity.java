@@ -46,7 +46,7 @@ public class MainActivity extends FragmentActivity {
 		spConfig.addNumber2WhiteList("" + phone++);
 
 		spConfig.setBlacklist(true);
-		spConfig.setWhitelist(true);
+		spConfig.setWhitelist(false);
 
 		//printSPconfig();
 	}
