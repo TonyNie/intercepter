@@ -156,7 +156,7 @@ public class SPConfig {
 		if (enable)
 			editor.putString(WHITELIST, ENTRY_ENABLE);
 		else
-			editor.putString(WHITELIST, ENTRY_ENABLE);
+			editor.putString(WHITELIST, ENTRY_DISABLE);
 		editor.commit();
 
 		return 0;
