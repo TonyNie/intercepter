@@ -16,6 +16,10 @@
     <string name="calllog">Call Log</string>
     <string name="username">User Name</string>
 	<string name="smslog">SMS Log</string>
+	<string name="manaul">Manaul</string>
+	<string name="edittext_number">edittext_number</string>
+	<string name="number_hint">Input Number</string>
+	<string name="comment_hint">Input Comment</string>
     <string-array name="str_list_source">
         <item>Address Book</item>
         <item>Call records</item>

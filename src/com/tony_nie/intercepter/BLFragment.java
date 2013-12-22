@@ -24,7 +24,8 @@ public class BLFragment extends android.support.v4.app.Fragment {
 	static final int PICK_CONTACT_REQUEST = 0;
 	static final int PICK_CALLLOG_REQUEST = 1;
 	static final int PICK_SMSLOG_REQUEST = 2;
-	static final int EDIT_NUMBER = 3;
+	static final int PICK_MANAUL_REQUEST = 3;
+	static final int EDIT_NUMBER = 4;
 	static final String NUMBER = "number";
 	static final String PHONE = "phone";
 	static final String SMS = "SMS";
@@ -182,6 +183,27 @@ public class BLFragment extends android.support.v4.app.Fragment {
 		return 0;
 	}
 
+	private int getNumberManaully(Intent data) {
+		Log.i(FRAGMENT, "get number form call log");
+		Bundle bundle = data.getExtras();
+
+		if (null == bundle)
+			return 0;
+
+		String number = bundle.getString(EditNumberActivity.MANAUL_NUMBER);
+
+		long state = 0;
+		state |= SPConfig.ENTRY_ENABLE_ALL;
+
+		SPConfig config = new SPConfig(getActivity(), SPConfig.CONFIG_NAME);
+		config.addNumber2Blacklist(number);
+		config.setEntrySate(SPConfig.BLACKLIST, number, state);
+
+		updateListviewData();
+
+		return 0;
+	}
+	
 	private int updateNumber(Intent data) {
 		Bundle bundle = data.getExtras();
 
@@ -239,6 +261,9 @@ public class BLFragment extends android.support.v4.app.Fragment {
 			if (null != data)
 				getNumberFromSMSLog(data);
 			break;
+		case PICK_MANAUL_REQUEST:
+			if (null != data)
+				getNumberManaully(data);
 		default:
 			break;
 		}

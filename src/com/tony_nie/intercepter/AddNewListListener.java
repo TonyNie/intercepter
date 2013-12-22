@@ -51,6 +51,9 @@ public class AddNewListListener implements android.view.View.OnClickListener {
 	}
 
 	private int addNewListManaul() {
+		Intent intent = new Intent(mFragment.getActivity(),
+				EditNumberActivity.class);
+		mFragment.startActivityForResult(intent, BLFragment.PICK_MANAUL_REQUEST);
 		return 0;
 	}
 

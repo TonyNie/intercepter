@@ -40,12 +40,15 @@
             android:name="com.tony_nie.intercepter.CallLogActivity"
             android:label="@string/calllog" >
         </activity>
-
         <activity
             android:name="com.tony_nie.intercepter.SMSLogActivity"
             android:label="@string/smslog" >
         </activity>
-        
+        <activity
+            android:name="com.tony_nie.intercepter.EditNumberActivity"
+            android:label="@string/manaul" >
+        </activity>
+
         <receiver android:name=".PhoneStatReceiver" >
             <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.PHONE_STATE" />
